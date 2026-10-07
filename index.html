@@ -161,6 +161,12 @@ h2{font-size:clamp(24px,3vw,32px); letter-spacing:-.6px; font-weight:800}
 .qr-bar span{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--amber),var(--orange)); border-radius:4px; transition:width .6s ease}
 .qr-pct{color:var(--muted); font-size:13px; text-align:right; white-space:nowrap}
 [data-theme="light"] .qr-bar{background:rgba(20,35,60,.09)}
+/* back-to-top tile */
+.totop-wrap{text-align:center; margin:30px 0 8px}
+.totop{position:relative; display:inline-flex; align-items:center; gap:14px; background:linear-gradient(180deg,var(--card),var(--card2)); border:none; color:var(--text); font:inherit; font-weight:800; font-size:17px; padding:20px 38px; border-radius:16px; cursor:pointer; transition:transform .25s ease}
+.totop:hover{transform:translateY(-3px)}
+.totop::before{content:""; position:absolute; inset:0; border-radius:16px; padding:2px; background:linear-gradient(120deg,var(--amber),var(--orange),var(--cyan)); -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none}
+.tt-arrow{width:38px; height:38px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background:linear-gradient(135deg,var(--amber),var(--orange)); color:#1d1214; font-size:20px; font-weight:900; flex:0 0 auto}
 footer{border-top:1px solid var(--line); margin-top:44px; padding:30px 0 46px; color:var(--faint); font-size:13.5px}
 footer strong{color:var(--muted)}
 .rv{opacity:0; transform:translateY(22px); transition:opacity .6s ease, transform .6s ease}
@@ -362,6 +368,10 @@ footer strong{color:var(--muted)}
     </div>
   </section>
 
+  <div class="totop-wrap rv">
+    <button class="totop" id="toTop" aria-label="Back to the top"><span class="tt-arrow">↑</span><span>Back to the top</span></button>
+  </div>
+
 </div><!-- /wrap -->
 <footer>
   <div class="wrap">
@@ -513,6 +523,23 @@ document.querySelectorAll('.gterm').forEach(t=>{
     paint(); btn.classList.add('dim');
   };
   paint();
+})();
+/* back to top: smooth animated scroll */
+(function(){
+  const btn=$('toTop'); if(!btn) return;
+  btn.onclick=()=>{
+    const sy=scrollY;
+    cancelAnimationFrame(scrollAnim);
+    if(REDUCED||sy<4){ scrollTo(0,0); return; }
+    const dur=Math.min(1100,420+sy*.32), t0=performance.now();
+    const ez=k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
+    function fr(now){
+      const p=Math.min(1,(now-t0)/dur);
+      scrollTo(0,sy*(1-ez(p)));
+      if(p<1) scrollAnim=requestAnimationFrame(fr);
+    }
+    scrollAnim=requestAnimationFrame(fr);
+  };
 })();
 /* rating quiz */
 (function(){
